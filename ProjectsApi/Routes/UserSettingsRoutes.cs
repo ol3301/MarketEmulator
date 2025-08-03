@@ -1,7 +1,6 @@
-using MongoDB.Driver;
-using ProjectsApplication;
-using ProjectsApplication.Models;
-using ProjectsDomain;
+using ProjectsApi.Application.Dtos;
+using ProjectsApi.Application.Queries;
+using ProjectsApi.Application.Services;
 
 namespace ProjectsApi.Routes;
 
@@ -9,14 +8,14 @@ public static class UserSettingsRoutes
 {
     public static IEndpointRouteBuilder MapUserSettingsRoutes(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/usersettings/{id:int}", async (int id, IMongoClient client) =>
+        app.MapGet("/api/users/{id:int}/settings/", async (int id, UserSettingsQueries queriesService) =>
         {
-            var collection = client.GetDatabase("Projects").GetCollection<UserSettings>("UserSettings");
-            
-            return Results.Ok(await collection.Find(x => x.UserId == id).FirstOrDefaultAsync());
+            return await queriesService.GetUserSettingsAsync(id) is { } dto
+                ? Results.Ok(dto)
+                : Results.NoContent();
         });
         
-        app.MapPost("/usersettings/{id:int}", async (int id, UserSettingsUpdateRequestModel model, UserSettingsCreatorService settingsCreatorService) =>
+        app.MapPost("/api/users/{id:int}/settings", async (int id, UserSettingsUpdateDto model, UserSettingsCreatorService settingsCreatorService) =>
         {
             await settingsCreatorService.CreateOrUpdateAsync(id, model);
             return Results.Ok();

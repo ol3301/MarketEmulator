@@ -17,6 +17,24 @@ services:
     restart: unless-stopped
     networks:
       - market_emulator_network
+  nats:
+    image: nats
+    container_name: nats
+    command: ["-js", "-sd", "/data"]
+    ports:
+      - "4222:4222"
+    restart: unless-stopped
+    networks:
+      - market_emulator_network
+  nats-ui:
+    image: ghcr.io/nats-nui/nui
+    container_name: nats-ui
+    ports:
+      - "31311:31311"
+    restart: unless-stopped
+    depends_on: ["nats"]
+    networks:
+      - market_emulator_network
   usersapi:
     build:
       context: .
@@ -25,11 +43,10 @@ services:
     container_name: usersapi
     ports:
       - "8001:8001"
-    depends_on:
-      - mongodb
-      - postgres
+    depends_on: ["mongodb", "postgres", "nats"]
     environment:
       ConnectionStrings__UsersDatabase: "Host=postgres;Port=5432;Database=MarketEmulator;Username=postgres;Password=123456789"
+      ConnectionStrings__NatsMq: "nats://nats:4222"
       ASPNETCORE_URLS: "http://0.0.0.0:8001"
     restart: unless-stopped
     networks:
@@ -42,18 +59,14 @@ services:
     container_name: projectsapi
     ports:
       - "8002:8002"
-    depends_on:
-      - mongodb
-      - postgres
-      - usersapi
+    depends_on: ["mongodb", "postgres", "usersapi", "nats"]
     environment:
-      ConnectionStrings__UsersDatabase: "Host=postgres;Port=5432;Database=MarketEmulator;Username=postgres;Password=123456789"
-      ProjectsDatabase__ConnectionString: "mongodb://mongodb:27017"
+      ConnectionStrings__ProjectsDatabase: "mongodb://mongodb:27017"
+      ConnectionStrings__NatsMq: "nats://nats:4222"
       ASPNETCORE_URLS: "http://0.0.0.0:8002"
     restart: unless-stopped
     networks:
       - market_emulator_network
-
 
 networks:
   market_emulator_network:

@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using UsersDatabase;
-using UsersDomain;
+using UsersApi.Application.Domain;
+using UsersApi.Application.Domain.Entities;
+using UsersApi.Application.Infrastructure.Postgres;
 
 namespace UsersIntegrationTests;
 

@@ -1,17 +1,17 @@
 @ProjectsApi_HostAddress = http://localhost:8002/api
 
-GET {{ProjectsApi_HostAddress}}/popularIndicators/2
+GET {{ProjectsApi_HostAddress}}/popularIndicators/3
 Accept: application/json
 
 ###
 
 
-GET {{ProjectsApi_HostAddress}}/usersettings/
+GET {{ProjectsApi_HostAddress}}/users/1/settings/
 Accept: application/json
 
 ###
 
-PUT {{ProjectsApi_HostAddress}}/projects/1
+PUT {{ProjectsApi_HostAddress}}/users/1/projects
 Content-Type: application/json
 
 {
@@ -22,7 +22,7 @@ Content-Type: application/json
         "Timeframe": "new timeframe",
         "Indicators": [
             {
-            "Name": "New indicator123123213123123",
+            "Name": "Second user #2",
             "Parameters": "new parameters"
             }
         ]

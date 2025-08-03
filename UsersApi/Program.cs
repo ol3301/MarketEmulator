@@ -1,7 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using NATS.Net;
+using UsersApi.Application.Domain.Interfaces;
+using UsersApi.Application.Infrastructure.Nats;
+using UsersApi.Application.Infrastructure.Postgres;
+using UsersApi.Application.Queries;
+using UsersApi.Application.Services;
 using UsersApi.Routes;
-using UsersApplication;
-using UsersDatabase;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,14 +17,18 @@ builder.Services.AddDbContext<UsersDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("UsersDatabase"));
 });
 
+builder.Services.AddSingleton<IIntegrationEventPublisher>(_ =>
+{
+    return new NatsEventPublisher(new NatsClient(builder.Configuration.GetConnectionString("NatsMq")!), "integration-events");
+});
+
 builder.Services.AddTransient<UserCreatorAppService>();
-builder.Services.AddTransient<UserQueriesService>();
 builder.Services.AddTransient<UserSubscriptionService>();
+builder.Services.AddTransient<UserQueries>();
 
 var app = builder.Build();
 
-app.MapGroup("/api")
-    .MapUsersRoutes();
+app.MapUsersRoutes();
 
 if (app.Environment.IsDevelopment())
 {
@@ -37,4 +45,7 @@ else
 }
 
 app.Run();
-public partial class Program { }//for integration tests
+namespace UsersApi
+{
+    public partial class Program { }
+}//for integration tests

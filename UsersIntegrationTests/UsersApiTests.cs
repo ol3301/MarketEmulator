@@ -1,15 +1,15 @@
 using System.Net;
 using System.Text.Json;
-using UsersApplication.Models;
+using UsersApi.Application.Dtos;
 using Xunit;
 
 namespace UsersIntegrationTests;
 
-public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
+public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<UsersApi.Program>>
 {
     private readonly HttpClient _client;
 
-    public UsersApiTests(CustomWebApplicationFactory<Program> factory)
+    public UsersApiTests(CustomWebApplicationFactory<UsersApi.Program> factory)
     {
         _client = factory.CreateClient();
     }
@@ -21,7 +21,7 @@ public class UsersApiTests : IClassFixture<CustomWebApplicationFactory<Program>>
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync();
-        var user = JsonSerializer.Deserialize<UserResponseViewModel>(content, new JsonSerializerOptions
+        var user = JsonSerializer.Deserialize<UserResponseDto>(content, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
         });

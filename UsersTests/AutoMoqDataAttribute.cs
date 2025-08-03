@@ -2,7 +2,7 @@ using AutoFixture;
 using AutoFixture.AutoMoq;
 using AutoFixture.Xunit2;
 using Microsoft.EntityFrameworkCore;
-using UsersDatabase;
+using UsersApi.Application.Infrastructure.Postgres;
 
 namespace UsersTests;
 

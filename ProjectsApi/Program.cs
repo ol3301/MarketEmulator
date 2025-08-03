@@ -1,32 +1,44 @@
-using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
+using NATS.Net;
+using ProjectsApi.Application.Background;
+using ProjectsApi.Application.Infrastructure.MongoDb;
+using ProjectsApi.Application.Infrastructure.Nats;
+using ProjectsApi.Application.Queries;
+using ProjectsApi.Application.Services;
 using ProjectsApi.Routes;
-using ProjectsApplication;
-using UsersDatabase;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IMongoClient>(x =>
+builder.Services.AddSingleton<MongoDbContext>(x =>
 {
-    var connectionString = builder.Configuration.GetSection("ProjectsDatabase")["ConnectionString"];
-    return new MongoClient(connectionString);
+    var connectionString = builder.Configuration.GetConnectionString("ProjectsDatabase");
+    return new MongoDbContext(new MongoClient(connectionString));
 });
-builder.Services.AddDbContext<UsersDbContext>(options =>
+builder.Services.AddSingleton<NatsEventsConsumer>(provider =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("UsersDatabase"));
+    var connectionString = builder.Configuration.GetConnectionString("NatsMq")!;
+    return new NatsEventsConsumer(new NatsClient(connectionString), provider.GetRequiredService<ILogger<NatsEventsConsumer>>());
 });
-builder.Services.AddTransient<ProjectQueriesService>();
+
+builder.Services.AddTransient<ProjectQueries>();
+builder.Services.AddTransient<UserSettingsQueries>();
 builder.Services.AddTransient<ProjectCreatorService>();
 builder.Services.AddTransient<UserSettingsCreatorService>();
+builder.Services.AddTransient<UserEventSyncService>();
+
+builder.Services.AddHostedService<IntegrationEventsSyncService>();
 
 var app = builder.Build();
 
-app.MapGroup("api")
-    .MapProjectsRoutes()
-    .MapUserSettingsRoutes();
+app.MapUserProjectsRoutes()
+    .MapUserSettingsRoutes()
+    .MapGet("/api/popularIndicators/{subscriptionType:int}", async (int subscriptionType, ProjectQueries queriesService) =>
+    {
+        return Results.Ok(await queriesService.GetMostUsedIndecatorsAsync(subscriptionType));
+    });;
 
 if (app.Environment.IsDevelopment())
 {

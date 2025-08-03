@@ -22,7 +22,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\UsersApi\UsersApi.csproj" />
-      <ProjectReference Include="..\UsersDatabase\UsersDatabase.csproj" />
     </ItemGroup>
 
 </Project>

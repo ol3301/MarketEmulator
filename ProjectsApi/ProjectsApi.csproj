@@ -5,14 +5,11 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.17"/>
         <PackageReference Include="MongoDB.Driver" Version="3.4.0" />
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+        <PackageReference Include="NATS.Net" Version="2.6.6" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\ProjectsApplication\ProjectsApplication.csproj" />
-      <ProjectReference Include="..\ProjectsDomain\ProjectsDomain.csproj" />
-      <ProjectReference Include="..\SharedDomain\SharedDomain.csproj" />
-      <ProjectReference Include="..\UsersDatabase\UsersDatabase.csproj" />
+      <ProjectReference Include="..\Core\Core.csproj" />
     </ItemGroup>
     <ItemGroup>
       <Content Include="..\.dockerignore">

@@ -1,17 +1,15 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER $APP_UID
 WORKDIR /app
+EXPOSE 8080
+EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Directory.Build.props", "Directory.Build.props"]
 COPY ["ProjectsApi/ProjectsApi.csproj", "ProjectsApi/"]
-COPY ["ProjectsDomain/ProjectsDomain.csproj", "ProjectsDomain/"]
-COPY ["ProjectsApplication/ProjectsApplication.csproj", "ProjectsApplication/"]
-COPY ["SharedDomain/SharedDomain.csproj", "SharedDomain/"]
-COPY ["UsersDatabase/UsersDatabase.csproj", "UsersDatabase/"]
-COPY ["UsersDomain/UsersDomain.csproj", "UsersDomain/"]
+COPY ["Core/Core.csproj", "Core/"]
 RUN dotnet restore "ProjectsApi/ProjectsApi.csproj"
 COPY . .
 WORKDIR "/src/ProjectsApi"

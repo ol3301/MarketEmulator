@@ -21,7 +21,7 @@ Content-Type: application/json
 {
   "StartDate": "2023-10-01T00:00:00",
   "EndDate": "2025-10-01T00:00:00",
-  "SubscriptionTypeId": 2
+  "SubscriptionTypeId": 3
 }
 
 ###

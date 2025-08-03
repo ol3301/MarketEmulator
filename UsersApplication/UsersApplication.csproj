@@ -1,7 +1,0 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-    <ItemGroup>
-      <ProjectReference Include="..\SharedDomain\SharedDomain.csproj" />
-      <ProjectReference Include="..\UsersDatabase\UsersDatabase.csproj" />
-      <ProjectReference Include="..\UsersDomain\UsersDomain.csproj" />
-    </ItemGroup>
-</Project>
