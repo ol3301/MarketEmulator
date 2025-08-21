@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using NATS.Net;
+using UsersApi.Application.Background;
 using UsersApi.Application.Domain.Interfaces;
+using UsersApi.Application.Domain.Services;
 using UsersApi.Application.Infrastructure.Nats;
 using UsersApi.Application.Infrastructure.Postgres;
 using UsersApi.Application.Queries;
@@ -17,14 +19,17 @@ builder.Services.AddDbContext<UsersDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("UsersDatabase"));
 });
 
-builder.Services.AddSingleton<IIntegrationEventPublisher>(_ =>
+builder.Services.AddSingleton<IQueuePublisher>(_ =>
 {
-    return new NatsEventPublisher(new NatsClient(builder.Configuration.GetConnectionString("NatsMq")!), "integration-events");
+    return new NatsQueuePublisher(new NatsClient(builder.Configuration.GetConnectionString("NatsMq")!), "integration-events");
 });
 
 builder.Services.AddTransient<UserCreatorAppService>();
 builder.Services.AddTransient<UserSubscriptionService>();
 builder.Services.AddTransient<UserQueries>();
+builder.Services.AddTransient<IEventPublisherService, EventPublisherService>();
+
+builder.Services.AddHostedService<OutgoingEventPublisherBackgroundTask>();
 
 var app = builder.Build();
 

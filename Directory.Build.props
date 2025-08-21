@@ -4,6 +4,6 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <NoWarn>CS8618</NoWarn>
+        <NoWarn>CS8618, CS9113</NoWarn>
     </PropertyGroup>
 </Project>

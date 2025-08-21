@@ -8,10 +8,12 @@ using UsersApi.Application.Infrastructure.Postgres;
 
 namespace UsersApi.Application.Services;
 
-public class UserSubscriptionService(UsersDbContext context, IIntegrationEventPublisher publisher)
+public class UserSubscriptionService(UsersDbContext context, IEventPublisherService publisher)
 {
     public async Task SubscribeAsync(int id, UserSubscribeDto model)
     {
+        await using var transaction = await context.Database.BeginTransactionAsync();
+        
         var user = await context.Users
             .Include(x => x.Subscription)
             .FirstOrDefaultAsync(x => x.Id == id);
@@ -34,15 +36,18 @@ public class UserSubscriptionService(UsersDbContext context, IIntegrationEventPu
         };
 
         await context.SaveChangesAsync();
-        await publisher.PublishEventAsync(new UserUpdatedEvent(user.Id, 
-            new SubscriptionEventDto(model.SubscriptionTypeId, 
-                model.StartDate,
-                model.EndDate)), 
-            IntegrationEventType.UserUpdated);
+
+        await publisher.PublishEventAsync(new SubscriptionUpdatedEventDto(user.Id, 
+            user.Subscription.SubscriptionTypeId, 
+            user.Subscription.StartDate, 
+            user.Subscription.EndDate), IntegrationEventType.SubscriptionUpdated);
+        await transaction.CommitAsync();
     }
 
     public async Task UpdateSubscriptionAsync(int id, UserUpdateSubscriptionDto model)
     {
+        await using var transaction = await context.Database.BeginTransactionAsync();
+
         var user = await context.Users
             .Include(x => x.Subscription)
             .FirstOrDefaultAsync(x => x.Id == id);
@@ -62,10 +67,11 @@ public class UserSubscriptionService(UsersDbContext context, IIntegrationEventPu
         user.Subscription.EndDate = model.EndDate.ToUniversalTime();
         
         await context.SaveChangesAsync();
-        await publisher.PublishEventAsync(new UserUpdatedEvent(user.Id, 
-                new SubscriptionEventDto(model.SubscriptionTypeId, 
-                    model.StartDate,
-                    model.EndDate)), 
-            IntegrationEventType.UserUpdated);
+
+        await publisher.PublishEventAsync(new SubscriptionUpdatedEventDto(user.Id, 
+            user.Subscription.SubscriptionTypeId, 
+            user.Subscription.StartDate, 
+            user.Subscription.EndDate), IntegrationEventType.SubscriptionUpdated);
+        await transaction.CommitAsync();
     }
 }

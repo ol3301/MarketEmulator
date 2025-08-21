@@ -1,6 +1,6 @@
 namespace ProjectsApi.Application.Dtos;
 
-public class ProjectCreateDto
+public class ProjectCreateRequestDto
 {
     public string Name { get; set; }
     public IEnumerable<ChartCreateDto>? Charts { get; set; } = new List<ChartCreateDto>();

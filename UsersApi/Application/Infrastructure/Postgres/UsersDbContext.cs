@@ -9,6 +9,7 @@ public class UsersDbContext(DbContextOptions<UsersDbContext> options) : DbContex
     public DbSet<UserEntity> Users { get; set; }
     public DbSet<SubscriptionEntity> Subscriptions { get; set; }
     public DbSet<SubscriptionTypeEntity> SubscriptionTypes { get; set; }
+    public DbSet<OutgoingEventEntity> OutgoingEvents { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -17,5 +18,5 @@ public class UsersDbContext(DbContextOptions<UsersDbContext> options) : DbContex
         modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SubscriptionEntityConfiguration());
         modelBuilder.ApplyConfiguration(new SubscriptionTypeEntityConfiguration());
-    }
+        modelBuilder.ApplyConfiguration(new OutgoingEventEntityConfiguration());}
 }

@@ -4,7 +4,7 @@ namespace ProjectsApi.Application.Domain.Entities;
 
 public class ProjectEntity
 {
-    public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
+    public ObjectId Id { get; set; }
     public int UserId { get; set; }
     public string Name { get; set; }
     public List<ChartEntity>? Charts { get; set; } = new();

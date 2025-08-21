@@ -22,7 +22,7 @@ public class NatsEventsConsumer(NatsClient client, ILogger<NatsEventsConsumer> l
         {
             yield return msg;
         }
-        
+
         logger.LogInformation("Exiting Nats consumer");
     }
 }

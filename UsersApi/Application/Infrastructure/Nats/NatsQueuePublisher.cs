@@ -2,12 +2,11 @@ using NATS.Client.Core;
 using NATS.Client.JetStream;
 using NATS.Client.JetStream.Models;
 using NATS.Net;
-using UsersApi.Application.Domain.Events;
 using UsersApi.Application.Domain.Interfaces;
 
 namespace UsersApi.Application.Infrastructure.Nats;
 
-public class NatsEventPublisher(NatsClient client, string subjectName) : IIntegrationEventPublisher
+public class NatsQueuePublisher(NatsClient client, string subjectName) : IQueuePublisher
 {
     private Lazy<Task<INatsJSContext>> _contextFactory = new(async () =>
     {
@@ -22,13 +21,13 @@ public class NatsEventPublisher(NatsClient client, string subjectName) : IIntegr
         return context;
     });
 
-    public async Task PublishEventAsync<T>(T data, IntegrationEventType eventType) where T : IBaseEvent
+    public async Task PublishAsync(string data, string eventType)
     {
         var context = await _contextFactory.Value;
         
         await context.PublishAsync(subjectName, data, headers: new NatsHeaders
         { 
-            { "eventType", eventType.ToString() },
+            { "eventType", eventType },
         });
     }
 }

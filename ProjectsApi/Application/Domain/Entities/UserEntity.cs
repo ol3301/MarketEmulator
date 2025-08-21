@@ -5,7 +5,7 @@ namespace ProjectsApi.Application.Domain.Entities;
 
 public class UserEntity
 {
-    public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
+    public ObjectId Id { get; set; }
     public int UserId { get; set; }
     public SubscriptionEntity? Subscription { get; set; }
 

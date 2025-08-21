@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Core;
 using NATS.Net;
 using UsersApi.Application.Domain.Events;
@@ -8,33 +9,35 @@ namespace UsersTests;
 
 public class NatsEventPublisherTests
 {
-    private readonly NatsEventPublisher _publisher;
+    private readonly NatsQueuePublisher _publisher;
     
     public NatsEventPublisherTests()
     {
-        _publisher = new NatsEventPublisher(new NatsClient(), "integration-events");
+        _publisher = new NatsQueuePublisher(new NatsClient(), "integration-events");
     }
     
     //[Fact]
-    public async Task PublishOneMessageTest()
+    public async Task PublishUserCreatedEventTest()
     {
-        await _publisher.PublishEventAsync(new UserUpdatedEvent(2, 
-            new SubscriptionEventDto(SubscriptionType.Free, 
-                DateTime.Today, 
-                DateTime.Today.AddDays(30))), 
-            IntegrationEventType.UserUpdated);
+        await _publisher.PublishAsync(JsonSerializer.Serialize(new UserCreatedEventDto(1)), $"{IntegrationEventType.UserCreated}");
     }
     
     //[Fact]
-    public async Task PublishManyMessageTest()
+    public async Task PublishUsersCreatedEventTest()
     {
         foreach (var _ in Enumerable.Range(0, 10))
         {
-            await _publisher.PublishEventAsync(new UserUpdatedEvent(1, 
-                    new SubscriptionEventDto(SubscriptionType.Super, 
-                        DateTime.Today, 
-                        DateTime.Today.AddDays(30))), 
-                IntegrationEventType.UserUpdated);
+            await _publisher.PublishAsync(JsonSerializer.Serialize(new UserCreatedEventDto(1)), $"{IntegrationEventType.UserCreated}");
         }
+    }
+    
+    //[Fact]
+    public async Task PublishSubscriptionUpdatedEventTest()
+    {
+        await _publisher.PublishAsync(JsonSerializer.Serialize(new SubscriptionUpdatedEventDto(1,
+                SubscriptionType.Free,
+                DateTime.Today,
+                DateTime.Today.AddDays(30))),
+            $"{IntegrationEventType.SubscriptionUpdated}");
     }
 }

@@ -9,7 +9,7 @@ namespace ProjectsApi.Application.Queries;
 
 public class ProjectQueries(MongoDbContext context)
 {
-    public async Task<MostUsedIndicatorsDto> GetMostUsedIndecatorsAsync(int subscriptionType)
+    public async Task<MostUsedIndicatorsResponseDto> GetMostUsedIndecatorsAsync(int subscriptionType)
     {
         if (!Enum.IsDefined(typeof(SubscriptionType), subscriptionType))
         {
@@ -25,7 +25,7 @@ public class ProjectQueries(MongoDbContext context)
                                                      && x.Subscription != null 
                                                      && x.Subscription.EndDate >= DateTime.UtcNow 
                                                      && x.Subscription.SubscriptionType == subscriptionId))
-            .Where(x => x.Results.Length > 0)
+            .Where(x => x.Results.Length > 0 && x.Local.Charts!.Any() == true)
             .SelectMany(p => p.Local.Charts!.SelectMany(i => i.Indicators!))
             .GroupBy(x => x.Name)
             .Select(x => new MostUsedIndicatorEntryDto
@@ -37,6 +37,6 @@ public class ProjectQueries(MongoDbContext context)
             .Take(3)
             .ToListAsync();
 
-        return new MostUsedIndicatorsDto { Indicators = entries };
+        return new MostUsedIndicatorsResponseDto { Indicators = entries };
     }
 }

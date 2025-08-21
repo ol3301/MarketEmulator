@@ -1,6 +1,8 @@
 using MongoDB.Driver;
 using NATS.Net;
 using ProjectsApi.Application.Background;
+using ProjectsApi.Application.Domain.Interfaces;
+using ProjectsApi.Application.EventHandlers;
 using ProjectsApi.Application.Infrastructure.MongoDb;
 using ProjectsApi.Application.Infrastructure.Nats;
 using ProjectsApi.Application.Queries;
@@ -27,9 +29,11 @@ builder.Services.AddTransient<ProjectQueries>();
 builder.Services.AddTransient<UserSettingsQueries>();
 builder.Services.AddTransient<ProjectCreatorService>();
 builder.Services.AddTransient<UserSettingsCreatorService>();
-builder.Services.AddTransient<UserEventSyncService>();
+builder.Services.AddTransient<IEventHandlerFactory, EventHandlerFactory>();
+builder.Services.AddTransient<UserCreatedEventHandler>();
+builder.Services.AddTransient<SubscriptionUpdatedEventHandler>();
 
-builder.Services.AddHostedService<IntegrationEventsSyncService>();
+builder.Services.AddHostedService<IntegrationEventsSyncTask>();
 
 var app = builder.Build();
 

@@ -1,6 +1,6 @@
 namespace ProjectsApi.Application.Dtos;
 
-public class MostUsedIndicatorsDto
+public class MostUsedIndicatorsResponseDto
 {
     public IEnumerable<MostUsedIndicatorEntryDto> Indicators { get; set; }
 }

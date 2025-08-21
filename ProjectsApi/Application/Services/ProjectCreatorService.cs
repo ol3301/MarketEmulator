@@ -1,4 +1,5 @@
 using Core;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using ProjectsApi.Application.Domain.Entities;
@@ -9,7 +10,7 @@ namespace ProjectsApi.Application.Services;
 
 public class ProjectCreatorService(MongoDbContext context)
 {
-    public async Task CreateAsync(int userId, ProjectCreateDto model)
+    public async Task CreateAsync(int userId, ProjectCreateRequestDto model)
     {
         if(!await context.Users.AsQueryable().AnyAsync(x => x.UserId == userId))
         {
@@ -18,6 +19,7 @@ public class ProjectCreatorService(MongoDbContext context)
         
         var entity = new ProjectEntity
         {
+            Id = ObjectId.GenerateNewId(),
             UserId = userId,
             Name = model.Name,
             Charts = model.Charts?.Select(c => new ChartEntity
